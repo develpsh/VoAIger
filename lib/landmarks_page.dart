@@ -1,38 +1,41 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart'; // Google Generative AI 패키지 임포트
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:typed_data'; // 추가된 부분: Uint8List, ByteData를 사용하기 위해 필요
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
+import 'common_widgets.dart';
+import 'package:geolocator/geolocator.dart';
 
-const apiKey = 'YOUR_API_KEY'; // 여기에 실제 API 키를 입력하세요
+const apiKey = 'api';
 
 class LandmarksPage extends StatefulWidget {
-  final String landmarkName; // 랜드마크 이름
-  final String description; // 랜드마크 설명
+  final String landmarkName;
+  final String description;
+  final List<Map<String, dynamic>> landmarksData;
+  final Position currentPosition;
 
   const LandmarksPage({
-    Key? key,
+    super.key,
     required this.landmarkName,
     required this.description,
-  }) : super(key: key);
+    required this.landmarksData,
+    required this.currentPosition,
+  });
 
   @override
   _LandmarksPageState createState() => _LandmarksPageState();
 }
 
 class _LandmarksPageState extends State<LandmarksPage> {
-  TextEditingController _textController = TextEditingController();
-  bool _isSending = false; // 서버로 요청을 보내는 중인지 확인하는 플래그
-  List<String> _messages = []; // 채팅 메시지를 저장할 리스트
-
-  late GenerativeModel model; // Gemini 모델 객체
-
-  GlobalKey _globalKey = GlobalKey();
+  final TextEditingController _textController = TextEditingController();
+  bool _isSending = false;
+  final List<String> _messages = [];
+  late GenerativeModel model;
+  final GlobalKey _globalKey = GlobalKey();
 
   @override
   void initState() {
@@ -48,12 +51,11 @@ class _LandmarksPageState extends State<LandmarksPage> {
   }
 
   Future<void> _sendMessage(String message) async {
-    // 메시지에 랜드마크 이름을 자동으로 추가
     String modifiedMessage = '${widget.landmarkName}에 대한 질문입니다: $message';
 
     setState(() {
       _isSending = true;
-      _messages.add('User: $message'); // 사용자의 원래 메시지를 리스트에 추가
+      _messages.add('User: $message');
     });
 
     try {
@@ -61,8 +63,7 @@ class _LandmarksPageState extends State<LandmarksPage> {
       final response = await model.generateContent(content);
 
       setState(() {
-        _messages.add(
-            'Gemini: ${response.text ?? 'No response from Gemini'}'); // Gemini의 응답을 리스트에 추가
+        _messages.add('Gemini: ${response.text ?? 'No response from Gemini'}');
         _isSending = false;
       });
     } catch (e) {
@@ -72,12 +73,11 @@ class _LandmarksPageState extends State<LandmarksPage> {
       });
     }
 
-    _textController.clear(); // 텍스트 필드 초기화
+    _textController.clear();
   }
 
   Future<void> _shareMergedImage() async {
     try {
-      // 캡처된 이미지를 병합
       RenderRepaintBoundary boundary = _globalKey.currentContext!
           .findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 2.0);
@@ -98,7 +98,7 @@ class _LandmarksPageState extends State<LandmarksPage> {
     } catch (e) {
       print('Error sharing image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sharing image')),
+        const SnackBar(content: Text('Error sharing image')),
       );
     }
   }
@@ -111,8 +111,8 @@ class _LandmarksPageState extends State<LandmarksPage> {
         previousPageTitle: 'Back',
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: Icon(CupertinoIcons.share),
           onPressed: _shareMergedImage,
+          child: const Icon(CupertinoIcons.share),
         ),
       ),
       child: SafeArea(
@@ -123,47 +123,46 @@ class _LandmarksPageState extends State<LandmarksPage> {
             children: [
               RepaintBoundary(
                 key: _globalKey,
-                child: GifWithText(landmarkName: widget.landmarkName),
+                child: buildGifWithText(widget.landmarkName),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 widget.landmarkName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 widget.description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                 ),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 '자주 묻는 질문',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              // 동적으로 랜드마크 이름에 맞는 질문 생성
+              const SizedBox(height: 8),
               Text('• ${widget.landmarkName} 입장료는 얼마인가요?'),
               Text('• ${widget.landmarkName} 운영시간은 언제인가요?'),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 '채팅 기록',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(
-                height: 200, // 채팅 블록의 높이 설정
+                height: 200,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
@@ -183,56 +182,31 @@ class _LandmarksPageState extends State<LandmarksPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16), // 간격 추가
+              const SizedBox(height: 16),
               CupertinoTextField(
                 controller: _textController,
                 placeholder: 'Ask something...',
                 onSubmitted: _isSending ? null : (value) => _sendMessage(value),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               CupertinoButton.filled(
                 onPressed: _isSending
                     ? null
                     : () => _sendMessage(_textController.text),
-                child: Text('Send'),
+                child: const Text('Send'),
               ),
-              SizedBox(height: 20), // 페이지 끝에 약간의 여백 추가
+              const SizedBox(height: 20),
+              const Text(
+                '가까운 랜드마크',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              buildLandmarkList(
+                  context, widget.landmarksData, widget.currentPosition),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class GifWithText extends StatelessWidget {
-  final String landmarkName;
-
-  const GifWithText({required this.landmarkName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter, // 텍스트를 GIF 하단에 배치
-      children: [
-        Image.asset(
-          'assets/gifs/icon.gif', // GIF 파일 경로
-          width: 200,
-          height: 200,
-          fit: BoxFit.cover,
-        ),
-        Positioned(
-          bottom: -5, // 텍스트를 GIF 하단부에서 4픽셀 위로 조정
-          child: Text(
-            landmarkName, // 랜드마크 이름을 텍스트로 표시
-            style: TextStyle(
-              color: Color(0xFF7E59CC), // 텍스트 색상을 #5D3FD3로 설정
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
