@@ -24,7 +24,7 @@ class CitySelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text('Explore Any Cities'),
+        middle: Text("VoAIger, Your Personal Guide"),
       ),
       child: SafeArea(
         child: Column(
@@ -33,7 +33,7 @@ class CitySelectionPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'With AI Guide Anytime',
+                "Choose a City You're Visiting",
                 style: CupertinoTheme.of(context).textTheme.navTitleTextStyle,
               ),
             ),
@@ -42,8 +42,8 @@ class CitySelectionPage extends StatelessWidget {
             _buildCityGrid(
                 context, ['Seoul', 'Busan', 'Incheon', 'Jeju Island']),
             SizedBox(height: 32),
-            _buildSectionTitle(context, 'Europe'),
-            _buildCityGrid(context, ['Paris', 'London', 'Barcelona', 'Rome']),
+            _buildSectionTitle(context, 'USA'),
+            _buildCityGrid(context, ['San Francisco', 'New York', 'Los Angeles', 'Chicago']),
           ],
         ),
       ),

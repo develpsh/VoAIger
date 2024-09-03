@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'landmarks_page.dart'; // landmarks_page.dart 파일을 임포트합니다.
+import 'package:intl/intl.dart';
 
 class SeoulListPage extends StatefulWidget {
   @override
@@ -35,9 +36,9 @@ class _SeoulListPageState extends State<SeoulListPage> {
         'name': data[1].toString(), // '랜드마크' 칼럼
         'category': data[2].toString(),
         'description': data[3].toString(),
-        'landmark_en': data[4].toString(),
+        'name_en': data[4].toString(),
         'category_en': data[5].toString(),
-        'explanation_en': data[6].toString(),
+        'description_en': data[6].toString(),
         'gps': data[7].toString(),
         'address': data[8].toString(),
         'latitude': _parseLatLng(data[7].toString())[0],
@@ -132,7 +133,7 @@ class _SeoulListPageState extends State<SeoulListPage> {
     if (_currentPosition == null) return '';
     double distance = Geolocator.distanceBetween(
         _currentPosition!.latitude, _currentPosition!.longitude, lat, lon);
-    return '${(distance / 10).round() * 10}m'; // 10미터 단위로 반올림
+    return NumberFormat('#,###', 'en_US').format(distance.round()) + 'm'; // 미터 단위로 반올림 & 콤마
   }
 
   @override
@@ -165,13 +166,13 @@ class _SeoulListPageState extends State<SeoulListPage> {
                     context,
                     CupertinoPageRoute(
                       builder: (context) => LandmarksPage(
-                        landmarkName: landmark['name']!,
-                        description: landmark['description']!,
+                        landmarkName: landmark['name_en']!,
+                        description: landmark['description_en']!,
                       ),
                     ),
                   );
                 },
-                child: _buildCupertinoListTile(landmark['name']!, distance),
+                child: _buildCupertinoListTile(landmark['name_en']!, distance),
               );
             },
           ),

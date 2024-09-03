@@ -151,11 +151,11 @@ class _LandmarksPageState extends State<LandmarksPage> {
               ),
               SizedBox(height: 8),
               // 동적으로 랜드마크 이름에 맞는 질문 생성
-              Text('• ${widget.landmarkName} 입장료는 얼마인가요?'),
+              Text('• ${widget.landmarkName} 입장료가 있나요?'),
               Text('• ${widget.landmarkName} 운영시간은 언제인가요?'),
               SizedBox(height: 16),
               Text(
-                '채팅 기록',
+                '대화 기록',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

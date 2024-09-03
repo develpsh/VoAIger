@@ -8,7 +8,7 @@ class SeoulPage extends StatefulWidget {
 
 class _SeoulPageState extends State<SeoulPage> {
   List<String> _selectedCategories = [];
-  final List<String> _categoryOptions = ['역사', '문화', '예술', '식당', '쇼핑', '체험'];
+  final List<String> _categoryOptions = ['History', 'Culture', 'Art', 'Dining', 'Shopping', 'Experience'];
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class _SeoulPageState extends State<SeoulPage> {
                     ),
                   );
                 },
-                child: Text('Explore the Landmarks'),
+                child: Text("All Landmarks in Seoul"),
               ),
               SizedBox(height: 16),
               Container(
@@ -56,7 +56,7 @@ class _SeoulPageState extends State<SeoulPage> {
               ),
               SizedBox(height: 16),
               Text(
-                'Select Categories:',
+                "Travel Preferences (Multiple Choice)",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
